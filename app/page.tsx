@@ -3,7 +3,7 @@
 import RoomCanvas from '@/components/RoomCanvas';
 import TopBar from '@/components/TopBar';
 import { OBJ_SIZE } from '@/operations/constants';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import GlobalMotionStyles from '../components/GlobalMotionStyles';
 import {
@@ -18,7 +18,8 @@ import { useKittenTimers } from '../hooks/useKittenTimers';
 import { usePickupObject } from '../hooks/usePickupObject';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useRoomSize } from '../hooks/useRoomSize';
-import { Kitten, Knockable } from '../operations/types';
+import { scheduleRoam, scheduleTarget } from '../operations/room';
+import { Kitten, KittenId, Knockable } from '../operations/types';
 import MainLayout from '../layout/MainLayout';
 import SectionLayout from '../layout/SectionLayout';
 import ErrorFallback from '../components/ErrorFallback';
@@ -37,7 +38,7 @@ function PageContent() {
 
   // Room size and timers
   const { roomRef, roomSize } = useRoomSize({ w: 800, h: 480 });
-  const { clearAllTimers } = useKittenTimers();
+  const { clearAllTimers, loopsRef, clearTimersForKitten } = useKittenTimers();
 
   // UI state for shaking animation
   const [shakingIds, setShakingIds] = useState<Set<string>>(new Set());
@@ -58,6 +59,55 @@ function PageContent() {
     setOrder(() => 0);
     setShakingIds(() => new Set());
   }, [clearAllTimers]);
+
+  // --- Restore refs for objects and previous kitten IDs ---
+  const objectsRef = useRef<Knockable[]>([]);
+  useEffect(() => {
+    objectsRef.current = objects;
+  }, [objects]);
+
+  const prevIdsRef = useRef<Set<KittenId>>(new Set());
+
+  // --- Restore kitten movement scheduling effect ---
+  useEffect(() => {
+    const current = new Set<KittenId>(kittens.map((k) => k.id));
+    // Schedule movement for new kittens
+    kittens.forEach((k) => {
+      if (!prevIdsRef.current.has(k.id)) {
+        scheduleRoam(k.id, loopsRef, setKittens, roomSize);
+        scheduleTarget(
+          k.id,
+          loopsRef,
+          setKittens,
+          setObjects,
+          setShakingIds,
+          setChaos,
+          roomSize,
+          reduceMotion,
+          objectsRef,
+          sound
+        );
+      }
+    });
+    // Cleanup timers for removed kittens
+    prevIdsRef.current.forEach((id) => {
+      if (!current.has(id)) {
+        clearTimersForKitten(id);
+      }
+    });
+    prevIdsRef.current = current;
+  }, [
+    kittens,
+    setKittens,
+    setObjects,
+    setShakingIds,
+    setChaos,
+    roomSize,
+    reduceMotion,
+    sound,
+    loopsRef,
+    clearTimersForKitten,
+  ]);
 
   return (
     <MainLayout>
