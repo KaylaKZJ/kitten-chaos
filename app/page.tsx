@@ -60,7 +60,6 @@ function PageContent() {
     setShakingIds(() => new Set());
   }, [clearAllTimers]);
 
-  // --- Restore refs for objects and previous kitten IDs ---
   const objectsRef = useRef<Knockable[]>([]);
   useEffect(() => {
     objectsRef.current = objects;
@@ -68,7 +67,6 @@ function PageContent() {
 
   const prevIdsRef = useRef<Set<KittenId>>(new Set());
 
-  // --- Restore kitten movement scheduling effect ---
   useEffect(() => {
     const current = new Set<KittenId>(kittens.map((k) => k.id));
     // Schedule movement for new kittens
