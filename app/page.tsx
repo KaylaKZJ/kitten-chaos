@@ -21,6 +21,7 @@ import { useRoomSize } from '../hooks/useRoomSize';
 import { Kitten, Knockable } from '../operations/types';
 import MainLayout from '../layout/MainLayout';
 import SectionLayout from '../layout/SectionLayout';
+import ErrorFallback from '../components/ErrorFallback';
 
 // --- Add a ref to always have the latest objects state ---
 
@@ -52,11 +53,7 @@ function PageContent() {
   return (
     <MainLayout>
       <ErrorBoundary
-        fallback={
-          <div className='p-4 text-red-600 bg-red-50 rounded'>
-            Top bar failed to load.
-          </div>
-        }
+        fallback={<ErrorFallback message='Top bar failed to load.' />}
       >
         <TopBar
           kittenPresent={kittenPresent}
@@ -71,11 +68,7 @@ function PageContent() {
       <SectionLayout>
         <div className='mx-auto mt-4 w-full max-w-5xl px-4 pb-16'>
           <ErrorBoundary
-            fallback={
-              <div className='p-4 text-red-600 bg-red-50 rounded'>
-                Room failed to load.
-              </div>
-            }
+            fallback={<ErrorFallback message='Room failed to load.' />}
           >
             <RoomCanvas
               roomRef={roomRef}
