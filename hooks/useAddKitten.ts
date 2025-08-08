@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { Kitten, KittenId, KittenName } from '@/operations/types';
+import { Kitten } from '@/operations/types';
 import { randInt } from '@/operations/helpers';
-import { KITTEN_SIZE, ROOM_PADDING } from '@/operations/constants';
+import { KITTEN_SIZE, ROOM_PADDING, KITTENS } from '@/operations/constants';
 
 /**
  * Returns a callback to add a kitten to the state.
@@ -17,9 +17,10 @@ export function useAddKitten(
   sound: { meow: () => void }
 ) {
   return useCallback(
-    (id: KittenId) => {
+    (id: string) => {
       if (kittens.some((k) => k.id === id)) return;
-      const name: KittenName = id === 'eep' ? 'Eep' : 'Meep';
+      const kittenDef = KITTENS.find((k) => k.id === id);
+      if (!kittenDef) return;
       const x = randInt(
         ROOM_PADDING,
         Math.max(ROOM_PADDING, roomSize.w - KITTEN_SIZE - ROOM_PADDING)
@@ -30,7 +31,16 @@ export function useAddKitten(
       );
       setKittens((prev) => [
         ...prev,
-        { id, name, x, y, mode: 'idle', targetObjectId: null },
+        {
+          id: kittenDef.id,
+          name: kittenDef.name,
+          x,
+          y,
+          mode: 'idle',
+          targetObjectId: null,
+          color: kittenDef.color,
+          emote: kittenDef.emote,
+        },
       ]);
       sound.meow();
     },

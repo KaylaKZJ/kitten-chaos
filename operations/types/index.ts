@@ -1,12 +1,10 @@
-export type KittenId = 'eep' | 'meep';
-export type KittenName = 'Eep' | 'Meep';
 export type KittenMode = 'idle' | 'roam' | 'dash';
 export type ObjType = 'plant' | 'mug' | 'book';
 export type ObjState = 'upright' | 'knocked';
 
 export type Kitten = {
-  id: KittenId;
-  name: KittenName;
+  id: string;
+  name: string;
   x: number;
   y: number;
   mode: KittenMode;

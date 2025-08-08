@@ -3,7 +3,7 @@
 import RoomCanvas from '@/components/RoomCanvas';
 import TopBar from '@/components/TopBar';
 import { OBJ_SIZE } from '@/operations/constants';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import GlobalMotionStyles from '../components/GlobalMotionStyles';
 import {
@@ -23,6 +23,7 @@ import { Kitten, KittenId, Knockable } from '../operations/types';
 import MainLayout from '../layout/MainLayout';
 import SectionLayout from '../layout/SectionLayout';
 import ErrorFallback from '../components/ErrorFallback';
+import { KITTENS } from '@/operations/constants';
 
 // Main page content component
 function PageContent() {
@@ -44,7 +45,15 @@ function PageContent() {
   const [shakingIds, setShakingIds] = useState<Set<string>>(new Set());
 
   // Derived state and action hooks
-  const kittenPresent = useKittenPresence(kittens);
+  // Use KITTENS to determine which kittens can be added
+  const kittenPresent = useMemo(() => {
+    const present: Record<string, boolean> = {};
+    for (const k of KITTENS) {
+      present[k.id] = kittens.some((kit) => kit.id === k.id);
+    }
+    return present;
+  }, [kittens]);
+
   const addKitten = useAddKitten(kittens, setKittens, roomSize, sound);
   const addObject = useAddObject(setObjects, roomSize);
   const pickupObject = usePickupObject(setObjects, setOrder, sound);

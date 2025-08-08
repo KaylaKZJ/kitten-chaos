@@ -8,11 +8,12 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import * as React from 'react';
-import { KittenId, ObjType } from '@/operations/types';
+import { ObjType } from '@/operations/types';
+import { KITTENS } from '@/operations/constants';
 
 type TopBarProps = {
-  kittenPresent: { eep: boolean; meep: boolean };
-  addKitten: (id: KittenId) => void;
+  kittenPresent: Record<string, boolean>;
+  addKitten: (id: string) => void;
   addObject: (type: ObjType) => void;
   muted: boolean;
   setMuted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,22 +35,17 @@ export default function TopBar({
         <div className='ml-auto flex flex-wrap items-center gap-2'>
           <div className='flex items-center gap-2'>
             <span className='text-sm text-muted-foreground'>Add Kitten:</span>
-            <Button
-              size='sm'
-              variant='secondary'
-              onClick={() => addKitten('eep')}
-              disabled={kittenPresent.eep}
-            >
-              Add Eep
-            </Button>
-            <Button
-              size='sm'
-              variant='secondary'
-              onClick={() => addKitten('meep')}
-              disabled={kittenPresent.meep}
-            >
-              Add Meep
-            </Button>
+            {KITTENS.map((k) => (
+              <Button
+                key={k.id}
+                size='sm'
+                variant='secondary'
+                onClick={() => addKitten(k.id)}
+                disabled={kittenPresent[k.id]}
+              >
+                Add {k.name}
+              </Button>
+            ))}
           </div>
           <div className='h-5 w-px bg-border' />
           <div className='flex items-center gap-2'>
