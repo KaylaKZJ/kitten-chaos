@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { Kitten } from '@/operations/types';
+import KittenEmote from './KittenEmote';
 
 type KittenProps = {
   kitten: Kitten;
@@ -17,6 +18,11 @@ export default function KittenComponent({ kitten, reduceMotion }: KittenProps) {
       ? '0ms'
       : '740ms';
   const hue = kitten.id === 'eep' ? 320 : 20; // Eep pink, Meep orange
+
+  React.useEffect(() => {
+    console.log(`Kitten ${kitten.name} is now in ${kitten.mode} mode`);
+    // Additional side effects can be handled here if needed
+  }, [kitten.mode, kitten.name]);
 
   return (
     <div
@@ -37,10 +43,15 @@ export default function KittenComponent({ kitten, reduceMotion }: KittenProps) {
         style={{
           background: `hsl(${hue} 90% 86%)`,
           color: `hsl(${hue} 70% 30%)`,
+          position: 'relative',
         }}
         role='img'
         aria-label={kitten.name}
       >
+        {kitten.mode === 'dash' && (
+          <KittenEmote x={kitten.x} y={kitten.y} emote={kitten.name} />
+        )}
+
         {'😺'}
       </div>
       <div className='mt-1 text-center text-[10px] leading-none text-muted-foreground'>
