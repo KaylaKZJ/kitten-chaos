@@ -19,6 +19,8 @@ import { usePickupObject } from '../hooks/usePickupObject';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useRoomSize } from '../hooks/useRoomSize';
 import { Kitten, Knockable } from '../operations/types';
+import MainLayout from '../layout/MainLayout';
+import SectionLayout from '../layout/SectionLayout';
 
 // --- Add a ref to always have the latest objects state ---
 
@@ -48,7 +50,7 @@ function PageContent() {
   }, [clearAllTimers]);
 
   return (
-    <main className='flex min-h-screen flex-col'>
+    <MainLayout>
       <ErrorBoundary
         fallback={
           <div className='p-4 text-red-600 bg-red-50 rounded'>
@@ -66,7 +68,7 @@ function PageContent() {
         />
       </ErrorBoundary>
 
-      <section className='flex-1'>
+      <SectionLayout>
         <div className='mx-auto mt-4 w-full max-w-5xl px-4 pb-16'>
           <ErrorBoundary
             fallback={
@@ -91,10 +93,10 @@ function PageContent() {
             />
           </ErrorBoundary>
         </div>
-      </section>
+      </SectionLayout>
 
       <GlobalMotionStyles />
-    </main>
+    </MainLayout>
   );
 }
 
